@@ -56,8 +56,8 @@
     }
 
     const url = "{{ url_for( offer_url  ) }}";
-    const answer_url = "{{ url_for( answer_url )}}";
-    console.log(url,answer_url);
+    let input = ''
+    console.log(url);
     
     create_offer_button.onclick = function () {
         console.log('here');
@@ -95,7 +95,7 @@
 
     pc1.onicecandidate = function(e) {
         if (e.candidate == null) {
-            var input = document.getElementById("username_input").value;
+            input = document.getElementById("username_input").value;
             console.log(JSON.stringify(pc1.localDescription));
             const params = {
                 user_name : input,
@@ -104,25 +104,32 @@
             sendParams(url, params)
             chatlog.innerHTML += "Send the offer to the server\n Kindly wait still someone answer it </p>";
             username_input.value = '';
+            checkInput();
+            get_answer();
         }
     }
 
     function get_answer() {
-        fetch(answer_url + '/'+ input)
+        console.log(input);
+        fetch(window.location.origin + '/get_answer/'+ input)
           .then(response => response.json())
           .then(data => {
             if (!data.success) {
+                console.log(data);
               // If "success" is false, run the function again after 1 second
-              setTimeout(checkStatus, 1000);
+              setTimeout(get_answer, 1000);
             } else {
               // If "success" is true, check the "answer" key
               console.log('Success! Answer:', data.answer);
+              console.log(data);
+                let answerDesc = new RTCSessionDescription(JSON.parse(data.answer));
+                pc1.setRemoteDescription(answerDesc);
             }
           })
           .catch(error => {
             console.error('Error:', error);
           });
-      }
+    }
     function sendMessage () {
         if (messageTextBox.value) {
           activedc.send(JSON.stringify({message: messageTextBox.value}));
@@ -130,6 +137,6 @@
           messageTextBox.value = "";
         }
         return false
-      }
+    }
 </script>
 </html>

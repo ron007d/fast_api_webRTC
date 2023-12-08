@@ -21,7 +21,8 @@ def home(request : Request):
 @app.get('/call_page')
 def call_page(request: Request):
     # return {'Message' : f'you have came to URL page {request.url}'}
-    return templates.TemplateResponse('call_page.html',{'request':request, "offer_url" : "saving_offers"})
+    return templates.TemplateResponse('call_page.html',{'request':request, 
+                                                        "offer_url" : "saving_offers"})
 
 @app.post('/offer_data')
 def saving_offers(request: Request,user_name, offer):
@@ -31,26 +32,57 @@ def saving_offers(request: Request,user_name, offer):
     offers[user_name] = {'offer': offer}
     return {'success' : True}
 
-@app.get('/anser_data/{user_name}')
-def answer_data(user_name):
+@app.post('/answer_data')
+def answer_data(user_name, answer):
+    
+    offers[user_name]['answer'] = answer
+    return {'success': True}
+
+
+@app.get('/get_answer/{user_name}')
+def get_answer(user_name):
     if user_name not in offers:
-        return {'success' : False,'user_name':user_name}
+        
+        return {'success' : False,
+                'error' : "username not found"}
+    elif 'answer' in offers[user_name]:
+        
+            return {'success': True,
+                    'user_name':user_name,
+                    'answer':offers[user_name]['answer']}
     else:
-        return {'success': True,'user_name':user_name,'answer':offers[user_name]['answer']}
+        return {'success' : False,
+                'error' : "not answered yet"}
 
 
 @app.get('/get_offers')
 def get_offers():
     return offers
+
 @app.get('/get_offers/{user_name}')
 def get_offers(user_name,request: Request):
     print(user_name)
-    return {'Message' : f'you have came to URL page {request.url}'}
+    # return {'Message' : f'you have came to URL page {request.url}'}
+    if user_name not in offers:
+        
+        return {'success' : False,
+                'error' : "username not found"}
+    elif 'offer' in offers[user_name]:
+        
+            return {'success': True,
+                    'user_name':user_name,
+                    'offer':offers[user_name]['offer']}
+    else:
+        return {'success' : False,
+                'error' : "no offer yet"}
 
 
 @app.get('/answer_page')
 def answer_page(request: Request):
-    return {'Message' : f'you have came to URL page {request.url}'}
+    options = offers.keys()
+    # return {'Message' : f'you have came to URL page {request.url}'}
+    return templates.TemplateResponse('answer_page.html',{'request': request,
+                                                          'options' : options})
 
 
 
