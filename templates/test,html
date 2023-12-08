@@ -1,0 +1,33 @@
+<html>
+<head>
+  <script>
+    // This function checks if the input field is empty or not
+    function checkInput() {
+      var input = document.getElementById("input").value;
+      var button = document.getElementById("button");
+      if (input == "") {
+        // If the input field is empty, disable the button
+        button.disabled = true;
+      } else {
+        // If the input field is not empty, enable the button
+        button.disabled = false;
+      }
+    }
+    // This function sends the input data as username to a URL as parameter
+    function sendData() {
+      var input = document.getElementById("input").value;
+      var url = "https://example.com?username=" + input;
+      // You can use any method to send the data, such as fetch, XMLHttpRequest, etc.
+      // Here we use fetch as an example
+      fetch(url)
+        .then(response => response.text())
+        .then(data => alert(data)); // You can do anything with the data, such as alert, console.log, etc.
+    }
+  </script>
+</head>
+<body>
+  <h1>Enter your name</h1>
+  <input id="input" type="text" placeholder="Enter name" oninput="checkInput()">
+  <button id="button" type="button" onclick="sendData()" disabled>Send Data</button>
+</body>
+</html>
