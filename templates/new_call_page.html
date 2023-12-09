@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- <link rel="icon" type="image/svg+xml" href="favicon.svg" /> -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WebRTC Demo</title>
+  </head>
+  <body>
+    <h2>1. Start your Webcam</h2>
+    <div class="videos">
+      <span>
+        <h3>Local Stream</h3>
+        <video id="webcamVideo" autoplay playsinline></video>
+      </span>
+      <span>
+        <h3>Remote Stream</h3>
+        <video id="remoteVideo" autoplay playsinline></video>
+      </span>
+
+
+    </div>
+
+    <button id="webcamButton">Start webcam</button>
+    <h2>2. Create a new Call</h2>
+    <button id="callButton" disabled>Create Call (offer)</button>
+
+    <h2>3. Join a Call</h2>
+    <p>Answer the call from a different browser window or device</p>
+    
+    <input id="callInput" />
+    <button id="answerButton" disabled>Answer</button>
+
+    <h2>4. Hangup</h2>
+
+    <button id="hangupButton" disabled>Hangup</button>
+
+    <hr>
+    Chat:
+    <br>
+    <div id="chatlog" style="height:200px; overflow:auto; border:1px solid"></div>
+    <br>
+    <input type="text" id="messageTextBox" placeholder="Type your message here">
+    <button id="sendMessageBtn" onclick="sendMessage()">Send message</button>
+
+    <script>
+        const servers = {
+            iceServers: [
+              {
+                urls: ['stun:stun1.l.google.com:19302', 'stun:stun2.l.google.com:19302'],
+              },
+            ],
+            iceCandidatePoolSize: 10,
+        };
+          
+        const pc = new RTCPeerConnection(servers);
+        let localstream = null
+        let remotestream = null
+        let activedc = null
+
+
+        const webcamButton = document.getElementById("webcamButton");
+        const webcamVideo = document.getElementById('webcamVideo');
+        const callButton = document.getElementById('callButton');
+
+
+
+
+        webcamButton.onclick = async () => {
+            localstream = await navigator.mediaDevices.getUserMedia({video : true, audio: false});
+            remotestream = new MediaStream();
+
+            localstream.getTracks().forEach((track) => {
+                pc.addTrack(track,localstream);
+            });
+
+
+            webcamVideo.srcObject = localstream;
+            
+            callButton.disabled = false;
+            console.log('call button disabled called');
+
+
+            datachannel = pc.createDataChannel('test',{reliable : true});
+            activedc = datachannel;
+            
+            datachannel.onopen = async (e) => {
+                console.log('User connected')
+            }
+
+            datachannel.onmessage = async (e) => {
+                var data = JSON.parse(e.data);
+                chatlog.innerHTML = data.message + '</p>';
+            }
+        };
+
+        callButton.onclick = async () => {
+            
+            pc.onicecandidate = (event) => {
+
+                if (event.candidate == null) {
+                    console.log(JSON.stringify(pc.localDescription));
+                }
+            };
+
+            const offerDesc = await pc.createOffer();
+            await pc.setLocalDescription(offerDesc);
+        };
+
+    </script>
+
+  </body>
+</html>

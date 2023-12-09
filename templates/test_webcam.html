@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WEB RTC webcam</title>
+</head>
+<body>
+    <h2>
+        Start your webcam
+    </h2>
+    <div class="videos">
+
+        <span>
+            <h3>
+                Local Stream
+            </h3>
+            <video id="localwebcamvideo" autoplay playsinline></video>
+        </span>
+    
+        <span>
+            <h3>
+                Remote stream
+            </h3>
+            <video id="remotewebcamvideo" autoplay playsinline></video>
+        </span>
+    </div>
+
+    <button id="startwebcam"> Start webcam</button>
+    <br>
+    <button id="create_offer" disabled>Create offer</button>
+    <br>
+    <input type="text" id="sdp_offer" placeholder="SDP offer">
+    <br>
+    <input type="text" id="remote_sdp_answer" placeholder="Remote SDP asnwer">
+    <br>
+    <button id="remote_answer_received">Remote answer Recived</button>
+    <br>
+    <br>
+    <br>
+    <h3>ANSWERING</h3>
+    <br>
+    <input type="text" id="remote_sdp_offer" placeholder="Remtoe SDP offer">
+    <br>
+    <button id="create_answer" disabled> Create answer</button>
+    <br>
+    <input type="text" id="sdp_asnwer" placeholder="SDP asnwer"> 
+
+
+    <script>
+
+        // videos
+
+        const remotewebcamvideo = document.getElementById('remotewebcamvideo');
+        const localwebcamvideo = document.getElementById('localwebcamvideo');
+
+        // Buttons and input boxes for offers
+
+        const startwebcam = document.getElementById('startwebcam');
+        const create_offer = document.getElementById('create_offer');
+        const create_answer = document.getElementById('create_answer');
+        const sdp_offer = document.getElementById('sdp_offer');
+        const sdp_asnwer = document.getElementById('sdp_asnwer');
+        const remote_sdp_offer = document.getElementById('remote_sdp_offer');
+        const remote_sdp_answer = document.getElementById('remote_sdp_answer');
+        const remote_answer_received = document.getElementById('remote_answer_received');
+
+        // creating peer coonnection
+        const servers = {
+            iceServers: [
+              {
+                urls: 'stun:stun.gmx.net',
+              }
+            ],
+            iceCandidatePoolSize: 10,
+        };
+        con = { 'optional': [{'DtlsSrtpKeyAgreement': true}] }
+
+//        const pc = new RTCPeerConnection({
+//            iceServers: [
+//                {
+//                urls: "stun:stun.relay.metered.ca:80",
+//                },
+//                {
+//                urls: "turn:a.relay.metered.ca:80",
+//                username: "baeb547adee013b092d0efbc",
+//                credential: "2IpEXdau9fs7lFSY",
+//                },
+//                {
+//                urls: "turn:a.relay.metered.ca:80?transport=tcp",
+//                username: "baeb547adee013b092d0efbc",
+//                credential: "2IpEXdau9fs7lFSY",
+//                },
+//                {
+//                urls: "turn:a.relay.metered.ca:443",
+//                username: "baeb547adee013b092d0efbc",
+//                credential: "2IpEXdau9fs7lFSY",
+//                },
+//                {
+//                urls: "turn:a.relay.metered.ca:443?transport=tcp",
+//                username: "baeb547adee013b092d0efbc",
+//                credential: "2IpEXdau9fs7lFSY",
+//                },
+//            ],
+//        });
+
+        const pc = new RTCPeerConnection(servers,con);
+
+        let localstream = null;
+        let remotestream = null;
+        
+
+        // adding web cam in tracks and showing it to screen
+        startwebcam.onclick = async () => {
+            localstream = await navigator.mediaDevices.getUserMedia({video : true, audio : false});
+            remotestream = new MediaStream();
+
+            // adding video track to the peer connection
+            localstream.getTracks().forEach((track) => {
+                pc.addTrack(track,localstream);
+            });
+
+
+            // adding remote stream output
+            pc.ontrack = (event) => {
+                event.streams[0].getTracks().forEach((track) => {
+                  remotestream.addTrack(track);
+                });
+            };
+            
+            console.log('video track has been added to the peer connection');
+            localwebcamvideo.srcObject = localstream;
+            remotewebcamvideo.srcObject = remotestream;
+            create_offer.disabled = false;
+            create_answer.disabled = false;
+        };
+
+        // when the offer button clicked it will give sdp offer
+        create_offer.onclick = async () => {
+
+
+            pc.onicecandidate = (event) => {
+                if (event.candidate == null) {
+                    console.log('Local description created for offering');
+                    sdp_offer.value = JSON.stringify(pc.localDescription);
+                }
+            };
+
+            const offerDesc = await pc.createOffer();
+            await pc.setLocalDescription(offerDesc);
+        };
+
+        // it will parse the remote answer and will estabish connection
+        remote_answer_received.onclick = async() => {
+
+            let data = remote_sdp_answer.value;
+            pc.setRemoteDescription(new RTCSessionDescription(JSON.parse(data)));
+
+        }
+
+
+        // add codes for answer
+        create_answer.onclick = async () => {
+            let data = remote_sdp_offer.value;
+            
+            // create if the ice candidate is created what to do
+            pc.onicecandidate = (event) => {
+                if (event.candidate == null) {
+                    console.log('Local description created for asnwer');
+                    sdp_asnwer.value = JSON.stringify(pc.localDescription);
+                }
+            };
+
+            let offer = new RTCSessionDescription(JSON.parse(data));
+            pc.setRemoteDescription(offer);
+            const asnwerDesc = pc.createAnswer();
+            await pc.setLocalDescription(asnwerDesc);
+        }
+
+
+    </script>
+
+</body>
+</html>
