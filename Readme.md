@@ -31,5 +31,5 @@ The implementation flows and learning flow works like this.
 
 ### Issues
 
-1. only Text mode is working in LAN where the ice candiadates are getting success but in video mode only LAN ice candidate is working.
+1. only `Text mode is working in LAN and WAN` where the ice candiadates are getting success but in `video mode only LAN` ice candidate is working.
 2. Added turn server but still its not working properly.
