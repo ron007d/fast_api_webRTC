@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Receive calls</title>
+</head>
+<body>
+    <div class = "videos">
+        <h3 style="color: red;">Paste the offer</h3>
+        <span>
+            <h3>Remote Stream</h3>
+            <video id="remote_video" autoplay playsinline></video>
+        </span>
+    </div>
+
+    <h3>Enter the Offer here</h3>
+    <input id="offer_data" row=20 cols=100 placeholder="paste the offer here">
+    <button id="create_answer_button">Create Answer</button>
+    <input id= "answer_data" row=20 cols=100 placeholder="Please wait for answer to come">
+</body>
+<script>
+    // creating constant
+    const offer_data = document.getElementById('offer_data');
+    const remote_video = document.getElementById('remote_video');
+    //const create_answer_button = document.getElementById('create_asnwer_button');
+    //const answer_data = document.getElementById('asnwer_data');
+    
+
+    var remotestream = null;
+
+
+    var cfg = {'iceServers': [{'url': "stun:stun.gmx.net"}]};
+    var con = { 'optional': [{'DtlsSrtpKeyAgreement': true}]};
+
+    var peer_connection = new RTCPeerConnection(cfg,con);
+
+    // ice candidate activation
+    peer_connection.onicecandidate = function (e) {
+        console.log(JSON.stringify(peer_connection.localDescription));
+        answer_data.value = JSON.stringify(peer_connection.localDescription);
+    }
+
+    // printing connection status
+    peer_connection.onconnectionstatechange = function(e){
+        console.log('current connection status',e);
+    }
+
+    create_answer_button.onclick = async () =>{
+
+        // add stream to remote_video
+        remotestream = new MediaStream();
+
+        peer_connection.ontrack = (event) => {
+            event.streams[0].getTracks().forEach((track) => {
+                remotestream.addTrack(track);
+            });
+        };
+
+
+        remote_video.srcObject = remotestream;
+        // first take the offer and create an answer
+        // then add stream in the remote stream
+        var offer = offer_data.value;
+        
+        var offer_description = new RTCSessionDescription(JSON.parse(offer));
+        await peer_connection.setRemoteDescription(offer_description);
+        var answer_description = await peer_connection.createAnswer();
+        peer_connection.setLocalDescription(answer_description);
+
+    };
+
+
+    
+</script>
+</html>

@@ -12,6 +12,12 @@ The implementation flows and learning flow works like this.
     
     b. answer will check all the username/room list and select one and will try to connect to that.
 
+---
+## Supporting features
+1. Added support python aiortc.
+2. video quality needed to be fixed on aiortc side.
+
+
 
 ## workdone
 | Index | Work | Under Planning | Under Progress | Testing | Completeds | Comments |
@@ -25,11 +31,15 @@ The implementation flows and learning flow works like this.
 |7| Create a simple HTML page and transmit video using WEB RTC | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | Created using miniwebrtc github and working |
 |8| Test the video transmission in LAN | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | LAN CONNECTION WORKING WITH VIDEO TRANSMISSION |
 |9| Test the video in NAT transmission | :white_check_mark: | :white_check_mark: | :x: | :bangbang: | Only text data channel is working but video transmission is not working |
-
-
+|10| Python AIORTC code to stream video from camera | :white_check_mark: | :white_check_mark: | :white_check_mark: | :bangbang: | Video working in LAN testing in WAN Left |
+|10| Python AIORTC code to Get video stream from another source | :white_check_mark: | :white_check_mark: | :white_check_mark: | :bangbang: | Video working in LAN testing in WAN Left |
 
 
 ### Issues
 
-1. only `Text mode is working in LAN and WAN` where the ice candiadates are getting success but in `video mode only LAN` ice candidate is working.
+1. only `Text mode is working in LAN and WAN` where the ice candiadates are getting success but in `video mode only LAN` ice candidate is working. 
+
+    > Issue resolved by adding turn :white_check_mark:
+
 2. Added turn server but still its not working properly.
+    > Needed more testing to confirm the issue. :bangbang:
