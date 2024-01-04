@@ -9,7 +9,8 @@ app = FastAPI()
 templates = Jinja2Templates('templates')
 
 testing_dict = {'Call' : {'url':'call_page'},
-                'answer' : {'url': 'answer_page'}}
+                'answer' : {'url': 'answer_page'},
+                'live_feed_server': {'url': 'live_feed_server'}}
 
 offers = {}
 
@@ -75,7 +76,19 @@ def get_offers(user_name,request: Request):
     else:
         return {'success' : False,
                 'error' : "no offer yet"}
-
+        
+@app.get('/remove_offer')
+def remove_offer(user_name,request: Request):
+    global offers
+    # print(offers)
+    if user_name not in offers:
+        return {'success' : False,
+                'error': 'Key not found'}
+    else:
+        offers.pop(user_name)
+        print(f'{user_name} deleted {request.client}')
+        return {'success' : True,
+                'message' : 'deleted offer'}
 
 @app.get('/answer_page')
 def answer_page(request: Request):
@@ -83,6 +96,14 @@ def answer_page(request: Request):
     # return {'Message' : f'you have came to URL page {request.url}'}
     return templates.TemplateResponse('answer_page.html',{'request': request,
                                                           'options' : options})
+    
+
+@app.get('/live_feed_server')
+def live_feed_server(request : Request):
+    options = offers.keys()
+    
+    return templates.TemplateResponse('live_feed_answer.html',{'request': request,
+                                                               'options': options})
 
 
 

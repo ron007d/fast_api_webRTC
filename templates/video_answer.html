@@ -30,7 +30,32 @@
     var remotestream = null;
 
 
-    var cfg = {'iceServers': [{'url': "stun:stun.gmx.net"}]};
+    var cfg = {iceServers: [
+        {
+          urls: "stun:stun.relay.metered.ca:80",
+        },
+        {
+          urls: "turn:standard.relay.metered.ca:80",
+          username: "baeb547adee013b092d0efbc",
+          credential: "2IpEXdau9fs7lFSY",
+        },
+        {
+          urls: "turn:standard.relay.metered.ca:80?transport=tcp",
+          username: "baeb547adee013b092d0efbc",
+          credential: "2IpEXdau9fs7lFSY",
+        },
+        {
+          urls: "turn:standard.relay.metered.ca:443",
+          username: "baeb547adee013b092d0efbc",
+          credential: "2IpEXdau9fs7lFSY",
+        },
+        {
+          urls: "turn:standard.relay.metered.ca:443?transport=tcp",
+          username: "baeb547adee013b092d0efbc",
+          credential: "2IpEXdau9fs7lFSY",
+        },
+    ],
+  };
     var con = { 'optional': [{'DtlsSrtpKeyAgreement': true}]};
 
     var peer_connection = new RTCPeerConnection(cfg,con);

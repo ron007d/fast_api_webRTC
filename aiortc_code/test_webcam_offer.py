@@ -4,11 +4,47 @@ import platform
 import os
 import cv2
 
-from aiortc import RTCPeerConnection, RTCSessionDescription, MediaStreamTrack
+from aiortc import RTCPeerConnection, RTCSessionDescription,RTCConfiguration,RTCIceServer, MediaStreamTrack
 from aiortc.contrib.media import MediaPlayer, MediaRelay
 from av import VideoFrame
 
+import requests
+
+server_url = 'http://116.193.133.227:5000/'
+def send_offer(data):
+    data = {'user_name':'pi_video_server',
+            'offer':data}
+    response = requests.post(url = f'{server_url}offer_data',params=data)
+    print(response)
+    
+def get_answer():
+    try:
+        while True:
+            pass
+    except:
+        print('Keyboard error')
+            
+    
 relay = MediaRelay()
+ice_servers = [RTCIceServer(urls='stun:stun.relay.metered.ca:80'),
+               RTCIceServer(urls='turn:a.relay.metered.ca:80',
+                            username='baeb547adee013b092d0efbc',
+                            credential="2IpEXdau9fs7lFSY"),
+               RTCIceServer(urls="turn:a.relay.metered.ca:80?transport=tcp" ,
+                            username = "baeb547adee013b092d0efbc",
+                            credential ="2IpEXdau9fs7lFSY" ),
+               RTCIceServer(urls= "turn:a.relay.metered.ca:443",
+                            username = "baeb547adee013b092d0efbc",
+                            credential = "2IpEXdau9fs7lFSY"),
+               RTCIceServer(urls= 'turn:a.relay.metered.ca:443?transport=tcp',
+                            username = "baeb547adee013b092d0efbc",
+                            credential = "2IpEXdau9fs7lFSY"),]
+
+config = RTCConfiguration(iceServers=ice_servers)
+
+google_ice = [RTCIceServer(urls='stun:stun.l.google.com:19302')]
+
+config2 = RTCConfiguration(google_ice)
 
 def create_local_video():
     options = {'framerate':'60','video_size':'1280x720'}
@@ -19,13 +55,15 @@ def create_local_video():
 async def offer():
     print('Starting RTC connection')
     
-    peer_connection = RTCPeerConnection()
+    peer_connection = RTCPeerConnection(configuration=config)
     
     @peer_connection.on('connectionstatechange')
     def connection_status():
         print('*'*20)
         print('Connection status is ',peer_connection.connectionState)
         print('*'*20)
+    
+    
     
     
     @peer_connection.on('datachannel')

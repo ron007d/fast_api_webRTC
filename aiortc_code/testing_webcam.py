@@ -4,7 +4,7 @@ import platform
 import os
 import cv2
 
-from aiortc import RTCPeerConnection, RTCSessionDescription, MediaStreamTrack
+from aiortc import RTCPeerConnection, RTCSessionDescription, MediaStreamTrack, RTCConfiguration, RTCIceServer
 from aiortc.contrib.media import MediaPlayer, MediaRelay
 from av import VideoFrame
 
@@ -14,6 +14,21 @@ from av import VideoFrame
 
 relay = MediaRelay()
 webcam = None
+ice_servers = [RTCIceServer(urls='stun:stun.relay.metered.ca:80'),
+               RTCIceServer(urls='turn:a.relay.metered.ca:80',
+                            username='baeb547adee013b092d0efbc',
+                            credential="2IpEXdau9fs7lFSY"),
+               RTCIceServer(urls="turn:a.relay.metered.ca:80?transport=tcp" ,
+                            username = "baeb547adee013b092d0efbc",
+                            credential ="2IpEXdau9fs7lFSY" ),
+               RTCIceServer(urls= "turn:a.relay.metered.ca:443",
+                            username = "baeb547adee013b092d0efbc",
+                            credential = "2IpEXdau9fs7lFSY"),
+               RTCIceServer(urls= 'turn:a.relay.metered.ca:443?transport=tcp',
+                            username = "baeb547adee013b092d0efbc",
+                            credential = "2IpEXdau9fs7lFSY"),]
+
+config = RTCConfiguration(iceServers=ice_servers)
 
 class VideoPlayer(MediaStreamTrack):
     kind = 'video'
@@ -60,7 +75,7 @@ def create_local_tracks(play_from, decode):
     
 async def offer():
     print('Starting RTC connection')
-    peer_connection = RTCPeerConnection()
+    peer_connection = RTCPeerConnection(configuration=config)  
     
     @peer_connection.on('connectionstatechange')
     def connection_status():
