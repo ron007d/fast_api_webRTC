@@ -26,19 +26,20 @@ def get_answer():
             
     
 relay = MediaRelay()
-ice_servers = [RTCIceServer(urls='stun:stun.relay.metered.ca:80'),
-               RTCIceServer(urls='turn:a.relay.metered.ca:80',
-                            username='baeb547adee013b092d0efbc',
-                            credential="2IpEXdau9fs7lFSY"),
-               RTCIceServer(urls="turn:a.relay.metered.ca:80?transport=tcp" ,
-                            username = "baeb547adee013b092d0efbc",
-                            credential ="2IpEXdau9fs7lFSY" ),
-               RTCIceServer(urls= "turn:a.relay.metered.ca:443",
-                            username = "baeb547adee013b092d0efbc",
-                            credential = "2IpEXdau9fs7lFSY"),
-               RTCIceServer(urls= 'turn:a.relay.metered.ca:443?transport=tcp',
-                            username = "baeb547adee013b092d0efbc",
-                            credential = "2IpEXdau9fs7lFSY"),]
+ice_servers = [RTCIceServer(urls='stun:___________________'),
+               RTCIceServer(urls='turn:___________________',
+                            username='____________________',
+                            credential="___________________"),
+               RTCIceServer(urls="turn:____________________________" ,
+                            username = "__________________________",
+                            credential ="_________________________" ),
+               RTCIceServer(urls= "turn:________________________",
+                            username = "__________________________",
+                            credential = "_________________________"),
+               RTCIceServer(urls= 'turn:____________________________',
+                            username = "__________________________",
+                            credential = "_________________________"),]
+
 
 config = RTCConfiguration(iceServers=ice_servers)
 

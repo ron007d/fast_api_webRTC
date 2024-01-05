@@ -31,34 +31,36 @@
 
 
     var cfg = {iceServers: [
-        {
-          urls: "stun:stun.relay.metered.ca:80",
-        },
-        {
-          urls: "turn:standard.relay.metered.ca:80",
-          username: "baeb547adee013b092d0efbc",
-          credential: "2IpEXdau9fs7lFSY",
-        },
-        {
-          urls: "turn:standard.relay.metered.ca:80?transport=tcp",
-          username: "baeb547adee013b092d0efbc",
-          credential: "2IpEXdau9fs7lFSY",
-        },
-        {
-          urls: "turn:standard.relay.metered.ca:443",
-          username: "baeb547adee013b092d0efbc",
-          credential: "2IpEXdau9fs7lFSY",
-        },
-        {
-          urls: "turn:standard.relay.metered.ca:443?transport=tcp",
-          username: "baeb547adee013b092d0efbc",
-          credential: "2IpEXdau9fs7lFSY",
-        },
-    ],
-  };
+          {
+            urls: "stun:______________________",
+          },
+          {
+            urls: "turn:_____________________",
+            username: "_________________________",
+            credential: "_________________________",
+          },
+          {
+            urls: "turn:___________________________",
+            username: "_________________________",
+            credential: "_________________________",
+          },
+          {
+            urls: "turn:___________________________",
+            username: "_________________________",
+            credential: "_________________________",
+          },
+          {
+            urls: "turn:____________________________________",
+            username: "_________________________",
+            credential: "_________________________",
+          },
+      ],
+    };
+
+    var cfg2 = { iceServers: [{urls: "stun:stun.l.google.com:19302"}]}
     var con = { 'optional': [{'DtlsSrtpKeyAgreement': true}]};
 
-    var peer_connection = new RTCPeerConnection(cfg,con);
+    var peer_connection = new RTCPeerConnection(cfg2,con);
 
     // ice candidate activation
     peer_connection.onicecandidate = function (e) {
